@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "547455476116",
+    "firebase_url": "https://door-with-rfid-default-rtdb.firebaseio.com",
+    "project_id": "door-with-rfid",
+    "storage_bucket": "door-with-rfid.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:547455476116:android:1d4c5a121d4900f4bcef81",
+        "android_client_info": {
+          "package_name": "com.example.door_with_rfid"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBA4rJhmt28Xf-yE_0ojCnGs3Hl68TBiV0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

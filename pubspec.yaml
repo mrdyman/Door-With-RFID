@@ -25,6 +25,7 @@ dependencies:
   objectbox: ^2.3.1
   objectbox_flutter_libs: any
   get_it: ^7.6.4
+  flutter_slidable: ^3.0.1
 
 dev_dependencies:
   flutter_test:

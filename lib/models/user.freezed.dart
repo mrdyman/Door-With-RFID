@@ -25,6 +25,7 @@ mixin _$User {
   String get name => throw _privateConstructorUsedError;
   String get position => throw _privateConstructorUsedError;
   String get uuid => throw _privateConstructorUsedError;
+  String? get key => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -40,7 +41,8 @@ abstract class $UserCopyWith<$Res> {
       {@Id(assignable: true) int? id,
       String name,
       String position,
-      String uuid});
+      String uuid,
+      String? key});
 }
 
 /// @nodoc
@@ -60,6 +62,7 @@ class _$UserCopyWithImpl<$Res, $Val extends User>
     Object? name = null,
     Object? position = null,
     Object? uuid = null,
+    Object? key = freezed,
   }) {
     return _then(_value.copyWith(
       id: freezed == id
@@ -78,6 +81,10 @@ class _$UserCopyWithImpl<$Res, $Val extends User>
           ? _value.uuid
           : uuid // ignore: cast_nullable_to_non_nullable
               as String,
+      key: freezed == key
+          ? _value.key
+          : key // ignore: cast_nullable_to_non_nullable
+              as String?,
     ) as $Val);
   }
 }
@@ -92,7 +99,8 @@ abstract class _$$_UserCopyWith<$Res> implements $UserCopyWith<$Res> {
       {@Id(assignable: true) int? id,
       String name,
       String position,
-      String uuid});
+      String uuid,
+      String? key});
 }
 
 /// @nodoc
@@ -108,6 +116,7 @@ class __$$_UserCopyWithImpl<$Res> extends _$UserCopyWithImpl<$Res, _$_User>
     Object? name = null,
     Object? position = null,
     Object? uuid = null,
+    Object? key = freezed,
   }) {
     return _then(_$_User(
       id: freezed == id
@@ -126,6 +135,10 @@ class __$$_UserCopyWithImpl<$Res> extends _$UserCopyWithImpl<$Res, _$_User>
           ? _value.uuid
           : uuid // ignore: cast_nullable_to_non_nullable
               as String,
+      key: freezed == key
+          ? _value.key
+          : key // ignore: cast_nullable_to_non_nullable
+              as String?,
     ));
   }
 }
@@ -138,7 +151,8 @@ class _$_User implements _User {
       {@Id(assignable: true) this.id,
       required this.name,
       required this.position,
-      required this.uuid});
+      required this.uuid,
+      this.key});
 
   factory _$_User.fromJson(Map<String, dynamic> json) => _$$_UserFromJson(json);
 
@@ -151,10 +165,12 @@ class _$_User implements _User {
   final String position;
   @override
   final String uuid;
+  @override
+  final String? key;
 
   @override
   String toString() {
-    return 'User(id: $id, name: $name, position: $position, uuid: $uuid)';
+    return 'User(id: $id, name: $name, position: $position, uuid: $uuid, key: $key)';
   }
 
   @override
@@ -166,12 +182,13 @@ class _$_User implements _User {
             (identical(other.name, name) || other.name == name) &&
             (identical(other.position, position) ||
                 other.position == position) &&
-            (identical(other.uuid, uuid) || other.uuid == uuid));
+            (identical(other.uuid, uuid) || other.uuid == uuid) &&
+            (identical(other.key, key) || other.key == key));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, id, name, position, uuid);
+  int get hashCode => Object.hash(runtimeType, id, name, position, uuid, key);
 
   @JsonKey(ignore: true)
   @override
@@ -192,7 +209,8 @@ abstract class _User implements User {
       {@Id(assignable: true) final int? id,
       required final String name,
       required final String position,
-      required final String uuid}) = _$_User;
+      required final String uuid,
+      final String? key}) = _$_User;
 
   factory _User.fromJson(Map<String, dynamic> json) = _$_User.fromJson;
 
@@ -205,6 +223,8 @@ abstract class _User implements User {
   String get position;
   @override
   String get uuid;
+  @override
+  String? get key;
   @override
   @JsonKey(ignore: true)
   _$$_UserCopyWith<_$_User> get copyWith => throw _privateConstructorUsedError;

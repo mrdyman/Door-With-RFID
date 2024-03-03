@@ -72,7 +72,8 @@ class RegistrationBloc extends Bloc<RegistrationEvent, RegistrationState> {
               User user = User(
                   name: result.name,
                   position: result.position,
-                  uuid: result.uuid);
+                  uuid: result.uuid,
+                  key: key);
 
               bool isStored = DbHelper.putUser(users: [user]);
               if (isStored) {

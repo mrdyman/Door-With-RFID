@@ -52,7 +52,7 @@ final _entities = <ModelEntity>[
   ModelEntity(
       id: const IdUid(2, 3860945148878761315),
       name: 'User',
-      lastPropertyId: const IdUid(4, 1537157792656469859),
+      lastPropertyId: const IdUid(5, 2807537623133529251),
       flags: 0,
       properties: <ModelProperty>[
         ModelProperty(
@@ -73,6 +73,11 @@ final _entities = <ModelEntity>[
         ModelProperty(
             id: const IdUid(4, 1537157792656469859),
             name: 'uuid',
+            type: 9,
+            flags: 0),
+        ModelProperty(
+            id: const IdUid(5, 2807537623133529251),
+            name: 'key',
             type: 9,
             flags: 0)
       ],
@@ -182,11 +187,14 @@ ModelDefinition getObjectBoxModel() {
           final nameOffset = fbb.writeString(object.name);
           final positionOffset = fbb.writeString(object.position);
           final uuidOffset = fbb.writeString(object.uuid);
-          fbb.startTable(5);
+          final keyOffset =
+              object.key == null ? null : fbb.writeString(object.key!);
+          fbb.startTable(6);
           fbb.addInt64(0, object.id ?? 0);
           fbb.addOffset(1, nameOffset);
           fbb.addOffset(2, positionOffset);
           fbb.addOffset(3, uuidOffset);
+          fbb.addOffset(4, keyOffset);
           fbb.finish(fbb.endTable());
           return object.id ?? 0;
         },
@@ -201,11 +209,14 @@ ModelDefinition getObjectBoxModel() {
               .vTableGet(buffer, rootOffset, 8, '');
           final uuidParam = const fb.StringReader(asciiOptimization: true)
               .vTableGet(buffer, rootOffset, 10, '');
+          final keyParam = const fb.StringReader(asciiOptimization: true)
+              .vTableGetNullable(buffer, rootOffset, 12);
           final object = User(
               id: idParam,
               name: nameParam,
               position: positionParam,
-              uuid: uuidParam);
+              uuid: uuidParam,
+              key: keyParam);
 
           return object;
         })
@@ -244,4 +255,7 @@ class User_ {
 
   /// see [User.uuid]
   static final uuid = QueryStringProperty<User>(_entities[1].properties[3]);
+
+  /// see [User.key]
+  static final key = QueryStringProperty<User>(_entities[1].properties[4]);
 }

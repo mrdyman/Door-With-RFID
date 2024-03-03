@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:door_with_rfid/di/injection_container.dart';
+import 'package:door_with_rfid/features/history/presentation/bloc/history_bloc.dart';
 import 'package:door_with_rfid/features/home/domain/entities/rfid.dart';
 import 'package:door_with_rfid/models/helper.dart';
 import 'package:door_with_rfid/models/history.dart';
@@ -21,6 +23,9 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   // FirebaseDatabase database = FirebaseDatabase.instance;
   List<Rfid> rfIds = [];
   List<User> users = [];
+
+  final TextEditingController searchTEC = TextEditingController();
+
   HomeBloc() : super(const _Initial()) {
     Future<void> getDataRfId() async {
       List<User> userData = DbHelper.getUser();
@@ -84,6 +89,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       emit(const _Loaded());
 
       DatabaseReference ref = FirebaseDatabase.instance.ref('isForceOpen');
+      DatabaseReference dorLog = FirebaseDatabase.instance.ref('tmpUuid');
       // Create a Completer to await the stream subscription
       final completer = Completer<void>();
       ref.onValue.listen((event) {
@@ -105,10 +111,34 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
               uuid: "Unknown");
 
           DbHelper.putHistory(histories: [history]);
+          sl.get<HistoryBloc>().add(const HistoryEvent.started());
           emit(const _Initial());
           emit(const _DoorForcedOpen());
         }
         debugPrint(data.toString());
+      });
+
+      dorLog.onValue.listen((event) {
+        final data = event.snapshot.value;
+
+        List<User> userResult = DbHelper.getUser(uuid: data.toString());
+
+        if (userResult.isEmpty) {
+          // user not registered
+
+          return;
+        }
+
+        History history = History(
+          activity: "Open Door",
+          dateTime: DateTime.now(),
+          uuid: data.toString(),
+        );
+
+        DbHelper.putHistory(histories: [history]);
+        sl.get<HistoryBloc>().add(const HistoryEvent.started());
+        emit(const _Initial());
+        emit(const _DoorOpen());
       });
 
       await completer.future;
@@ -125,6 +155,36 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       emit(const _Initial());
       await getDataRfId();
       emit(const _Loaded());
+    });
+
+    on<_Search>((event, emit) async {
+      emit(const _Initial());
+      await getDataRfId();
+      if (event.keyword.isNotEmpty) {
+        users.retainWhere((e) =>
+            e.name.toLowerCase().contains(event.keyword.toLowerCase()) ||
+            e.uuid.toLowerCase().contains(event.keyword.toLowerCase()));
+      }
+      emit(const _Loaded());
+    });
+
+    on<_DeleteUser>((event, emit) async {
+      emit(const _Initial());
+      //delete data on local
+      String key = "";
+      List<User> usersToDelete = DbHelper.getUser(id: event.id);
+      if (usersToDelete.isNotEmpty) {
+        key = users.first.key!;
+      }
+      bool isLocalUserDeleted = await DbHelper.deleteUser(id: [event.id]);
+      if (isLocalUserDeleted) {
+        users.removeWhere((e) => e.id == event.id);
+      }
+      //delete data on firebase
+      DatabaseReference dataToDelete =
+          FirebaseDatabase.instance.ref('data/$key');
+      await dataToDelete.remove();
+      emit(const _UserDeleted());
     });
   }
 }

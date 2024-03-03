@@ -4,6 +4,7 @@ import 'package:door_with_rfid/di/injection_container.dart';
 import 'package:door_with_rfid/features/history/presentation/bloc/history_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 
 class HistoryScreen extends StatelessWidget {
   const HistoryScreen({super.key});
@@ -59,15 +60,66 @@ class HistoryScreen extends StatelessWidget {
           //     ],
           //   ),
           // ),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 18),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(right: 18),
+                child: GestureDetector(
+                  onTap: () {
+                    bloc.dateFilterTEC.clear();
+                    bloc.add(const HistoryEvent.started());
+                  },
+                  child: const Text(
+                    "Clear",
+                    style: TextStyle(
+                        color: Colors.blue,
+                        decoration: TextDecoration.underline),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 18),
             child: CustomTextField(
+              onTap: () async {
+                DateTimeRange? dateTimeRange = await showDateRangePicker(
+                    builder: (context, child) {
+                      return Theme(
+                        data: ThemeData.light().copyWith(
+                          // primaryColor: blue,
+                          buttonTheme: const ButtonThemeData(
+                              textTheme: ButtonTextTheme.primary),
+                          // colorScheme: const ColorScheme.light(
+                          //   // primary: blue,
+                          // ).copyWith(secondary: blue),
+                        ),
+                        child: child!,
+                      );
+                    },
+                    context: context,
+                    firstDate: DateTime(2000),
+                    lastDate: DateTime.now());
+
+                if (dateTimeRange != null) {
+                  DateTime startDate = dateTimeRange.start;
+                  DateTime endDate = dateTimeRange.end;
+                  bloc.startDate = startDate;
+                  bloc.endDate = endDate;
+                  bloc.dateFilterTEC.text =
+                      "${DateFormat('dd').format(startDate)}-${DateFormat('MM').format(startDate)}-${startDate.year} to ${DateFormat('dd').format(endDate)}-${DateFormat('MM').format(endDate)}-${endDate.year}";
+                  bloc.add(const HistoryEvent.started());
+                }
+              },
+              readOnly: true,
               title: "Filter..",
-              suffixIcon: Padding(
+              suffixIcon: const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 10),
                 child: Icon(Icons.filter_alt),
               ),
-              hintText: "21 - Desember - 2023",
+              controller: bloc.dateFilterTEC,
+              hintText: "-- Show all data --",
             ),
           ),
           const SizedBox(height: 10),
@@ -83,6 +135,7 @@ class HistoryScreen extends StatelessWidget {
                         ],
                       )
                     : ListView.builder(
+                        padding: const EdgeInsets.only(bottom: 35),
                         itemCount: bloc.histories.length,
                         itemBuilder: ((context, index) {
                           return Padding(
@@ -111,13 +164,14 @@ class HistoryScreen extends StatelessWidget {
                                         const Icon(Icons.verified_user),
                                         const SizedBox(width: 10),
                                         Text(
-                                          bloc.histories[index].uuid,
+                                          bloc.histories[index].name,
                                           style: AppTextStyle.getAppTextStyle(),
                                         ),
                                         const Spacer(),
                                         Text(
-                                          bloc.histories[index].dateTime
-                                              .toString(),
+                                          DateFormat('dd/MM/yyyy | HH:mm:ss')
+                                              .format(bloc
+                                                  .histories[index].dateTime),
                                           style: AppTextStyle.getAppTextStyle(),
                                         ),
                                       ],
@@ -160,7 +214,7 @@ class HistoryScreen extends StatelessWidget {
                                                 top: 2,
                                                 bottom: 2),
                                             child: Text(
-                                              'Open Door',
+                                              bloc.histories[index].activity,
                                               style:
                                                   AppTextStyle.getAppTextStyle(
                                                       color: Colors.white,

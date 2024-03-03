@@ -105,13 +105,6 @@ class RegistrationScreen extends StatelessWidget {
                       controller: bloc.positionTEC,
                       errorText: bloc.positionError,
                       prefixIcon: SvgPicture.asset("assets/icons/user.svg"),
-                      suffixIcon: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 10),
-                        child: SvgPicture.asset(
-                          "assets/icons/eye-visible.svg",
-                          width: 30,
-                        ),
-                      ),
                       isRequired: true,
                       title: "Position",
                       hintText: "Manager",
